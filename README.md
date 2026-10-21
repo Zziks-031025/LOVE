@@ -6,6 +6,8 @@
 
 线上地址：<https://zziks-031025.github.io/LOVE/>
 
+![二维码](assets/img/qr-card.png)
+
 ## 本地预览
 
 在 `LOVE` 目录启动一个静态服务器：
