@@ -1,0 +1,321 @@
+.stage-shell {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: var(--bg-deep);
+}
+
+.stage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1240px;
+  height: 698px;
+  overflow: hidden;
+  isolation: isolate;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 18px;
+  background: var(--bg);
+  transform: translate(-50%, -50%) scale(var(--stage-scale, 1));
+  transform-origin: center center;
+}
+
+.stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 48%, transparent 34%, rgba(0, 0, 0, 0.52) 100%);
+}
+
+.stage-bg,
+.stage-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.stage-bg {
+  z-index: 0;
+  background:
+    radial-gradient(620px 520px at 50% 46%, rgba(35, 12, 20, 0.98), transparent 72%),
+    radial-gradient(460px 360px at 50% 44%, rgba(255, 77, 109, 0.075), transparent 70%),
+    var(--bg);
+  transition: background 0.8s var(--ease-soft);
+}
+
+.stage-glow {
+  left: 50%;
+  top: 47%;
+  width: 760px;
+  height: 620px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(255, 77, 109, 0.15), transparent 66%);
+  filter: blur(28px);
+  opacity: 0.82;
+  transition: opacity 0.8s var(--ease-soft);
+}
+
+.grain {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  pointer-events: none;
+  opacity: 0.032;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='128'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='128' height='128' filter='url(%23n)' opacity='.72'/%3E%3C/svg%3E");
+}
+
+.heart-stage {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.heart-canvas {
+  position: absolute;
+  inset: 0;
+  width: 1240px;
+  height: 698px;
+  pointer-events: none;
+}
+
+.heart-2d {
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.6s var(--ease-soft);
+}
+
+.heart-3d {
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.4s var(--ease-soft);
+}
+
+.fireworks-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 1240px;
+  height: 698px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.6s var(--ease-soft);
+}
+
+.scene {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(10px);
+  transition:
+    opacity 0.58s var(--ease-out),
+    transform 0.58s var(--ease-out);
+}
+
+.scene.is-active {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.heart-name-wrap {
+  position: absolute;
+  left: 50%;
+  top: 48.1%;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.75s var(--ease-soft);
+}
+
+.stage[data-scene="heart"] .heart-name-wrap {
+  opacity: 1;
+}
+
+.stage[data-scene="fireworks"] .heart-name-wrap,
+.stage[data-scene="words"] .heart-name-wrap,
+.stage[data-scene="text"] .heart-name-wrap,
+.stage[data-scene="opening"] .heart-name-wrap {
+  opacity: 0;
+}
+
+.heart-to {
+  display: none;
+  margin-bottom: 18px;
+  color: var(--rose-200);
+  font-family: var(--font-sans);
+  font-size: var(--fs-to);
+  letter-spacing: 0.24em;
+  opacity: 0.56;
+}
+
+.heart-name {
+  color: var(--rose-100);
+  font-family: var(--font-serif);
+  font-size: var(--fs-name);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: 0.18em;
+  padding-left: 0.18em;
+  text-shadow:
+    0 0 18px rgba(255, 77, 109, 0.46),
+    0 0 56px rgba(255, 77, 109, 0.22);
+  transition: opacity 0.5s var(--ease-soft);
+}
+
+.stage[data-mode="3d"] .heart-name {
+  opacity: 0.72;
+}
+
+.heart-name.is-long-name {
+  font-size: calc(var(--fs-name) * 0.78);
+}
+
+.heart-signature {
+  margin-top: 18px;
+  color: var(--text-3);
+  font-family: var(--font-serif);
+  font-size: var(--fs-to);
+  letter-spacing: 0.12em;
+}
+
+.topbar {
+  position: absolute;
+  top: var(--safe-top);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 var(--safe-right);
+  pointer-events: none;
+  transition: opacity 0.4s var(--ease-soft);
+}
+
+.topbar.is-hidden {
+  opacity: 0;
+}
+
+.topbar-group {
+  display: flex;
+  align-items: center;
+  gap: var(--control-gap);
+  pointer-events: auto;
+}
+
+.progress {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--progress-bottom) + env(safe-area-inset-bottom, 0px));
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  transform: translateX(-50%);
+  pointer-events: none;
+  transition: opacity 0.4s var(--ease-soft);
+}
+
+.progress.is-hidden {
+  opacity: 0;
+}
+
+.progress-dot {
+  display: block;
+  width: var(--dot-size);
+  height: var(--dot-size);
+  border-radius: 99px;
+  background: rgba(255, 247, 248, 0.19);
+  transition:
+    width 0.35s var(--ease-out),
+    background 0.35s var(--ease-soft),
+    box-shadow 0.35s var(--ease-soft);
+}
+
+.progress-dot.is-done {
+  background: rgba(255, 143, 163, 0.42);
+}
+
+.progress-dot.is-active {
+  width: var(--dot-active);
+  background: var(--rose-300);
+  box-shadow: 0 0 12px rgba(255, 77, 109, 0.5);
+}
+
+.next-button {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--next-bottom) + env(safe-area-inset-bottom, 0px));
+  z-index: 20;
+  transform: translateX(-50%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.next-button.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.stage.is-compact .heart-to {
+  display: block;
+}
+
+.stage.is-compact .heart-signature {
+  display: none;
+}
+
+.stage.is-compact .next-button {
+  left: auto;
+  right: var(--safe-right);
+  transform: none;
+}
+
+.stage.is-compact .stage-glow {
+  width: 620px;
+  height: 520px;
+}
+
+.stage.is-compact {
+  border-radius: 10px;
+}
+
+.stage.is-compact .topbar {
+  top: max(var(--safe-top), env(safe-area-inset-top, 0px));
+}
+
+.click-ring {
+  position: absolute;
+  z-index: 5;
+  width: 24px;
+  height: 24px;
+  margin-left: -12px;
+  margin-top: -12px;
+  border: 1px solid rgba(255, 214, 222, 0.8);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: ring-out 0.5s var(--ease-out) both;
+}
+
+@keyframes ring-out {
+  from {
+    opacity: 0.9;
+    transform: scale(0.35);
+  }
+  to {
+    opacity: 0;
+    transform: scale(2.4);
+  }
+}

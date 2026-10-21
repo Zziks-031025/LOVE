@@ -1,0 +1,52 @@
+:root {
+  --rose-50: #FFF7F8;
+  --rose-100: #FFE4EA;
+  --rose-200: #FFD6DE;
+  --rose-300: #FF8FA3;
+  --rose-400: #FF4D6D;
+  --rose-500: #E6395B;
+  --rose-600: #C9184A;
+  --rose-900: #2A0A12;
+
+  --bg: #070305;
+  --bg-deep: #040203;
+  --text-1: #FFF7F8;
+  --text-2: rgba(255, 247, 248, 0.72);
+  --text-3: rgba(255, 247, 248, 0.46);
+  --text-4: rgba(255, 247, 248, 0.28);
+  --line: rgba(255, 143, 163, 0.16);
+
+  --font-serif: "Songti SC", "STSong", "SimSun", "Noto Serif CJK SC", serif;
+  --font-sans: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --font-number: "DIN Alternate", "Bahnschrift", "Arial Narrow", sans-serif;
+
+  --stage-scale: 1;
+  --fs-heart: 12px;
+  --fs-center: 21px;
+  --fs-words: 17px;
+  --fs-name: 58px;
+  --fs-to: 12px;
+  --fs-ui: 14px;
+  --fs-mode: 11px;
+  --fs-hint: 12px;
+  --fs-boot-title: 44px;
+  --fs-boot-eyebrow: 11px;
+  --fs-boot-hint: 12px;
+
+  --control-size: 40px;
+  --control-hit: 44px;
+  --control-gap: 16px;
+  --icon-size: 20px;
+  --safe-top: 24px;
+  --safe-right: 48px;
+  --next-bottom: 48px;
+  --progress-bottom: 24px;
+  --dot-size: 6px;
+  --dot-active: 20px;
+  --center-rule: 28px;
+  --heart-copy-width: 150px;
+  --word-width: 760px;
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
+}

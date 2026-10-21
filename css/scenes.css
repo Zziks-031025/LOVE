@@ -1,0 +1,389 @@
+.stage[data-scene="opening"] .stage-bg {
+  background:
+    radial-gradient(420px 380px at 50% 46%, rgba(35, 12, 20, 0.62), transparent 72%),
+    #050203;
+}
+
+.stage[data-scene="opening"] .stage-glow {
+  opacity: 0.36;
+}
+
+.stage[data-scene="heart"] .stage-glow {
+  opacity: 0.92;
+}
+
+.stage[data-scene="fireworks"] .stage-glow {
+  opacity: 0.55;
+}
+
+.stage[data-scene="words"] .stage-bg {
+  background:
+    radial-gradient(600px 520px at 50% 46%, rgba(33, 12, 19, 0.96), transparent 74%),
+    var(--bg);
+}
+
+.stage[data-scene="words"] .stage-glow {
+  opacity: 0.38;
+}
+
+.stage[data-scene="text"] .stage-bg {
+  background:
+    radial-gradient(560px 500px at 50% 47%, rgba(31, 12, 18, 0.98), transparent 74%),
+    radial-gradient(360px 300px at 50% 47%, rgba(255, 77, 109, 0.07), transparent 72%),
+    var(--bg);
+}
+
+.stage[data-scene="text"] .stage-glow {
+  opacity: 0.58;
+}
+
+/* 第一幕 */
+.boot-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 1240px;
+  height: 698px;
+}
+
+.boot-content {
+  position: absolute;
+  left: 50%;
+  bottom: 48px;
+  z-index: 2;
+  width: 880px;
+  transform: translateX(-50%);
+  text-align: center;
+  pointer-events: none;
+}
+
+.boot-eyebrow {
+  margin-bottom: 12px;
+  color: var(--rose-200);
+  font-family: var(--font-sans);
+  font-size: var(--fs-boot-eyebrow);
+  letter-spacing: 0.28em;
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 0.8s var(--ease-soft) 0.15s,
+    transform 0.8s var(--ease-out) 0.15s;
+}
+
+.boot-title {
+  color: var(--rose-50);
+  font-family: var(--font-serif);
+  font-size: var(--fs-boot-title);
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: 0.08em;
+  text-shadow:
+    0 0 20px rgba(255, 77, 109, 0.22),
+    0 0 58px rgba(255, 77, 109, 0.12);
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 1s var(--ease-soft) 0.35s,
+    transform 1s var(--ease-out) 0.35s;
+}
+
+.title-line {
+  display: inline;
+}
+
+.boot-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+  color: var(--text-3);
+  font-family: var(--font-sans);
+  font-size: var(--fs-boot-hint);
+  letter-spacing: 0.2em;
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 0.8s var(--ease-soft) 0.65s,
+    transform 0.8s var(--ease-out) 0.65s;
+}
+
+.hint-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--rose-300);
+  box-shadow: 0 0 10px rgba(255, 77, 109, 0.7);
+  animation: hint-breathe 2.4s ease-in-out infinite;
+}
+
+.scene-opening.is-ready .boot-eyebrow,
+.scene-opening.is-ready .boot-title,
+.scene-opening.is-ready .boot-hint {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@keyframes hint-breathe {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(0.85);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+.stage.is-compact .boot-content {
+  width: 640px;
+  bottom: 26px;
+}
+
+.stage.is-compact .title-line {
+  display: block;
+}
+
+.stage.is-compact .boot-hint {
+  margin-top: 12px;
+}
+
+/* 第三幕 */
+.fireworks-hint {
+  position: absolute;
+  left: var(--safe-right);
+  bottom: calc(var(--next-bottom) + 42px + env(safe-area-inset-bottom, 0px));
+  color: var(--text-4);
+  font-family: var(--font-sans);
+  font-size: var(--fs-hint);
+  letter-spacing: 0.08em;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity 1.2s var(--ease-soft) 0.8s,
+    transform 1.2s var(--ease-out) 0.8s;
+}
+
+.scene-fireworks.is-active .fireworks-hint {
+  opacity: 0.52;
+  transform: translateY(0);
+}
+
+.stage.is-compact .fireworks-hint {
+  display: none;
+}
+
+/* 第四幕 */
+.words-layer {
+  position: absolute;
+  left: 50%;
+  top: 48%;
+  width: var(--word-width);
+  height: 520px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  transition:
+    opacity 0.5s var(--ease-soft),
+    transform 0.5s var(--ease-soft);
+}
+
+.words-layer.is-leaving {
+  opacity: 0;
+  transform: translate(-50%, -50%) translateY(8px);
+}
+
+.word-block {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 100%;
+  color: var(--text-1);
+  font-family: var(--font-serif);
+  font-size: var(--fs-words);
+  line-height: 1.8;
+  letter-spacing: 0.05em;
+  text-align: center;
+  opacity: 0;
+  transform: translate(-50%, -50%) translate(var(--wx, 0px), calc(var(--wy, 0px) + 10px));
+  transition:
+    opacity 0.6s var(--ease-soft),
+    transform 0.6s var(--ease-out);
+  text-shadow: 0 0 24px rgba(255, 77, 109, 0.12);
+}
+
+.word-block.is-active {
+  z-index: 3;
+  opacity: 1;
+  transform: translate(-50%, -50%) translate(var(--wx, 0px), var(--wy, 0px));
+}
+
+.word-block.is-dim {
+  z-index: 1;
+  opacity: 0.3;
+  transform: translate(-50%, -50%) translate(var(--wx, 0px), var(--wy, 0px));
+}
+
+.word-block.is-hidden {
+  z-index: 0;
+  opacity: 0;
+  transform: translate(-50%, -50%) translate(var(--wx, 0px), calc(var(--wy, 0px) + 10px));
+}
+
+.word-line {
+  display: block;
+}
+
+.kw {
+  color: var(--rose-100);
+  text-shadow:
+    0 0 10px rgba(255, 143, 163, 0.48),
+    0 0 22px rgba(255, 77, 109, 0.2);
+}
+
+/* 第五幕 */
+.text-heart-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.heart-copy {
+  position: absolute;
+  z-index: 2;
+  width: var(--heart-copy-width);
+  transform: translate(-50%, -50%) rotate(var(--rot, 0deg));
+  transform-origin: 50% 50%;
+  color: rgba(255, 247, 248, 0.8);
+  font-family: var(--font-serif);
+  font-size: var(--fs-heart);
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+  text-align: center;
+  white-space: nowrap;
+  text-shadow:
+    0 0 8px rgba(255, 77, 109, 0.34),
+    0 0 18px rgba(255, 77, 109, 0.14);
+  will-change: transform, opacity;
+}
+
+.heart-copy .kw {
+  color: var(--rose-100);
+  text-shadow:
+    0 0 9px rgba(255, 143, 163, 0.56),
+    0 0 20px rgba(255, 77, 109, 0.3);
+}
+
+.dust {
+  position: absolute;
+  z-index: 1;
+  border-radius: 50%;
+  background: var(--rose-300);
+  box-shadow: 0 0 7px rgba(255, 77, 109, 0.55);
+}
+
+.center-halo {
+  position: absolute;
+  left: 620px;
+  top: 350px;
+  z-index: 3;
+  width: 430px;
+  height: 230px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(255, 77, 109, 0.13), transparent 70%);
+  filter: blur(22px);
+  pointer-events: none;
+}
+
+.center-copy {
+  position: absolute;
+  left: 620px;
+  top: 350px;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 380px;
+  height: 108px;
+  transform: translate(-50%, -50%);
+  color: var(--rose-100);
+  font-family: var(--font-serif);
+  font-size: var(--fs-center);
+  line-height: 1.65;
+  letter-spacing: 0.1em;
+  text-align: center;
+  text-shadow:
+    0 0 14px rgba(255, 77, 109, 0.48),
+    0 0 38px rgba(255, 77, 109, 0.22);
+  opacity: 1;
+  filter: blur(0);
+  pointer-events: none;
+  transition:
+    opacity 0.62s var(--ease-soft),
+    transform 0.62s var(--ease-soft),
+    filter 0.62s var(--ease-soft);
+}
+
+.center-copy.is-hidden {
+  opacity: 0;
+}
+
+.center-copy.is-out {
+  opacity: 0;
+  transform: translate(-50%, -50%) translateY(-7px);
+  filter: blur(2px);
+}
+
+.center-copy.is-in {
+  opacity: 0;
+  transform: translate(-50%, -50%) translateY(7px);
+  filter: blur(2px);
+}
+
+.center-copy .kw {
+  color: var(--rose-300);
+  text-shadow:
+    0 0 12px rgba(255, 143, 163, 0.72),
+    0 0 30px rgba(255, 77, 109, 0.42);
+}
+
+.center-main {
+  display: flex;
+  min-height: 34px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.center-main .line {
+  white-space: nowrap;
+}
+
+.center-main .line.is-long {
+  font-size: 0.86em;
+}
+
+.center-rule {
+  display: block;
+  width: var(--center-rule);
+  height: 1px;
+  margin: 7px 0 8px;
+  background: linear-gradient(90deg, transparent, rgba(255, 214, 222, 0.52), transparent);
+}
+
+.center-rule.bottom {
+  margin: 8px 0 7px;
+}
+
+.stage.is-compact .center-copy {
+  width: 520px;
+  height: 150px;
+}
+
+.stage.is-compact .center-halo {
+  width: 560px;
+  height: 300px;
+}

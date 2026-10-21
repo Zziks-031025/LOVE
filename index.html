@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#070305">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="description" content="有一句话，想认真地说给你听。">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="有句话想对你说">
+  <meta property="og:description" content="有一句话，想认真地说给你听。">
+  <!-- 部署后把 og:url 和 og:image 换成完整 HTTPS 地址，微信分享才会显示封面。 -->
+  <meta property="og:url" content="">
+  <meta property="og:image" content="assets/img/share-cover.jpg">
+  <title>有句话想对你说</title>
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/scenes.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+  <div class="app" id="app">
+    <div class="stage-shell" id="stage-shell">
+      <main class="stage" id="stage" data-theme="rose" data-scene="opening" data-mode="2d" aria-label="「我与她」表白页">
+        <div class="stage-bg"></div>
+        <div class="stage-glow"></div>
+
+        <div class="heart-stage" id="heart-stage">
+          <canvas id="heart-2d" class="heart-canvas heart-2d" aria-hidden="true"></canvas>
+          <canvas id="heart-3d" class="heart-canvas heart-3d" aria-hidden="true"></canvas>
+          <div class="heart-name-wrap">
+            <p class="heart-to" id="heart-to">致 <span>你</span></p>
+            <h2 class="heart-name" id="heart-name">你</h2>
+            <p class="heart-signature" id="heart-signature">—— 我</p>
+          </div>
+        </div>
+
+        <canvas id="fireworks-canvas" class="fireworks-canvas" aria-hidden="true"></canvas>
+
+        <section class="scene scene-opening is-active" id="scene-opening" aria-hidden="false">
+          <canvas id="boot-canvas" class="boot-canvas" aria-hidden="true"></canvas>
+          <div class="boot-content">
+            <p class="boot-eyebrow">一份只给你的心意</p>
+            <h1 class="boot-title"><span class="title-line">点一下，</span><span class="title-line">有句话想对你说</span></h1>
+            <p class="boot-hint"><span class="hint-dot"></span>轻触屏幕</p>
+          </div>
+        </section>
+
+        <section class="scene scene-heart" id="scene-heart" aria-hidden="true"></section>
+
+        <section class="scene scene-fireworks" id="scene-fireworks" aria-hidden="true">
+          <p class="fireworks-hint">轻触空白处，放一朵烟花</p>
+        </section>
+
+        <section class="scene scene-words" id="scene-words" aria-hidden="true">
+          <div class="words-layer" id="words-layer"></div>
+        </section>
+
+        <section class="scene scene-text-heart" id="scene-text-heart" aria-hidden="true">
+          <div class="text-heart-layer" id="text-heart-layer"></div>
+          <div class="center-halo" aria-hidden="true"></div>
+          <div class="center-copy is-hidden" id="center-copy">
+            <span class="center-rule"></span>
+            <div class="center-main" id="center-main"></div>
+            <span class="center-rule bottom"></span>
+          </div>
+          <button class="replay-button" id="replay-btn" type="button" hidden>再看一遍</button>
+        </section>
+
+        <header class="topbar is-hidden" id="topbar">
+          <div class="topbar-group">
+            <button class="icon-button" id="btn-music" type="button" aria-label="播放背景音乐" aria-pressed="false">
+              <span class="control-visual">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M4 9.5v5h3.2l4.1 3.4V6.1L7.2 9.5H4Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                  <path class="sound-wave" d="M15.2 9.1a4.2 4.2 0 0 1 0 5.8M17.9 6.6a7.7 7.7 0 0 1 0 10.8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+              </span>
+            </button>
+            <button class="icon-button mode-button" id="btn-mode" type="button" aria-label="切换到 3D 爱心" title="切换到 3D">3D</button>
+            <button class="icon-button" id="btn-fullscreen" type="button" aria-label="进入全屏" aria-pressed="false">
+              <span class="control-visual">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+            </button>
+            <button class="text-button skip-button" id="btn-skip" type="button" hidden>跳过</button>
+          </div>
+        </header>
+
+        <div class="progress is-hidden" id="progress" aria-label="观看进度"></div>
+        <button class="text-button next-button" id="btn-next" type="button">继续</button>
+        <div class="grain" aria-hidden="true"></div>
+      </main>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <div class="password-layer" id="password-layer" hidden>
+    <div class="password-backdrop"></div>
+    <div class="password-modal" id="password-modal" role="dialog" aria-modal="true" aria-labelledby="password-title">
+      <p class="password-eyebrow">PRIVATE</p>
+      <h2 class="password-title" id="password-title">输入我们的小口令</h2>
+      <p class="password-hint">四位数字，只有你知道。</p>
+      <div class="password-inputs">
+        <input class="password-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off" aria-label="口令第 1 位">
+        <input class="password-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off" aria-label="口令第 2 位">
+        <input class="password-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off" aria-label="口令第 3 位">
+        <input class="password-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off" aria-label="口令第 4 位">
+      </div>
+      <p class="password-error" id="password-error" role="alert"></p>
+    </div>
+  </div>
+
+  <div class="rotate-overlay" id="rotate-overlay" hidden>
+    <div class="rotate-icon" aria-hidden="true">
+      <svg viewBox="0 0 64 64">
+        <rect x="18" y="7" width="28" height="50" rx="5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M28 50h8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M10 24a4 4 0 0 1 0-5l-4 2.5L10 24Zm-4-2.5h14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <p class="rotate-title">请横屏观看</p>
+    <p class="rotate-hint">把手机转一下，画面会更大</p>
+  </div>
+
+  <noscript>
+    <div class="noscript">请开启 JavaScript 后再打开这份心意。</div>
+  </noscript>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
