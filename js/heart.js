@@ -63,8 +63,15 @@ export class Heart2D {
 
     if (glow) {
       const spread = randomRange(1.015, 1.11);
-      x = point.x * spread;
-      y = point.y * spread;
+      let px = point.x;
+      let py = point.y;
+      for (let tries = 0; tries < 6 && Math.abs(px) < 14; tries += 1) {
+        const next = this.box.point(Math.random() * Math.PI * 2);
+        px = next.x;
+        py = next.y;
+      }
+      x = px * spread;
+      y = py * spread;
       alpha = randomRange(0.12, 0.34);
       size = randomRange(0.9, 1.9);
     } else if (outline) {
@@ -76,8 +83,17 @@ export class Heart2D {
       size = randomRange(1.1, 2.8);
     } else {
       const radius = Math.sqrt(Math.random()) * 0.82;
-      x = point.x * radius;
-      y = point.y * radius;
+      // 内层粒子沿着轮廓点缩放填充。t≈0 和 t≈π 的点都落在中轴上，
+      // 直接缩放在画面正中会叠出一条竖线；这里避开中轴再取样。
+      let px = point.x;
+      let py = point.y;
+      for (let tries = 0; tries < 6 && Math.abs(px) < 14; tries += 1) {
+        const next = this.box.point(Math.random() * Math.PI * 2);
+        px = next.x;
+        py = next.y;
+      }
+      x = px * radius + randomRange(-3.5, 3.5);
+      y = py * radius + randomRange(-3.5, 3.5);
       alpha = randomRange(0.28, 0.62);
       size = randomRange(0.8, 2.1);
     }
