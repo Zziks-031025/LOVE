@@ -376,7 +376,11 @@ export class SceneManager {
     document.addEventListener("visibilitychange", () => {
       this.updatePaused();
       if (document.hidden) {
+        this.audioWasPlaying = this.audio.isPlaying;
         this.audio.pause();
+      } else if (this.audioWasPlaying) {
+        this.audioWasPlaying = false;
+        this.audio.start().then((playing) => this.updateMusicButton(playing));
       }
     });
 
@@ -415,14 +419,28 @@ export class SceneManager {
   enterFromGate() {
     if (!this.openingReady || this.modalOpen || this.busy) return;
     this.busy = true;
-    this.audio.start().then((playing) => {
-      this.updateMusicButton(playing);
+    this.setBootHint("正在为你准备音乐…");
+    // 先等音乐真正开始播放（或超时兜底），再收起开场动画进入正文。
+    const guard = new Promise((resolve) => window.setTimeout(() => resolve(false), 9000));
+    Promise.race([this.audio.start(), guard]).then((playing) => {
+      this.updateMusicButton(Boolean(playing));
+      this.setBootHint(null);
+      this.boot.collapse(() => {
+        this.busy = false;
+        this.boot.setVisible(false);
+        this.activateScene(1);
+      });
     });
-    this.boot.collapse(() => {
-      this.busy = false;
-      this.boot.setVisible(false);
-      this.activateScene(1);
-    });
+  }
+
+  setBootHint(text) {
+    const hint = this.els.sceneOpening.querySelector(".boot-hint");
+    if (!hint) return;
+    if (!this.bootHintDefault) this.bootHintDefault = hint.textContent.trim();
+    const dot = hint.querySelector(".hint-dot");
+    hint.textContent = text || this.bootHintDefault;
+    if (dot) hint.prepend(dot);
+    hint.classList.toggle("is-loading", Boolean(text));
   }
 
   activateScene(index) {

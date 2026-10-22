@@ -116,6 +116,15 @@
   animation: hint-breathe 2.4s ease-in-out infinite;
 }
 
+.boot-hint.is-loading {
+  animation: hint-loading 1.2s ease-in-out infinite;
+}
+
+@keyframes hint-loading {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
 .scene-opening.is-ready .boot-eyebrow,
 .scene-opening.is-ready .boot-title,
 .scene-opening.is-ready .boot-hint {

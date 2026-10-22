@@ -12,7 +12,7 @@ export class AudioController {
     if (!this.available) return;
     const audio = new Audio();
     audio.src = src;
-    audio.preload = "metadata";
+    audio.preload = "auto";
     audio.loop = true;
     audio.volume = 0;
     audio.addEventListener("error", () => {
