@@ -152,7 +152,7 @@
 }
 
 .heart-to {
-  display: none;
+  display: block;
   margin-bottom: 18px;
   color: var(--rose-200);
   font-family: var(--font-sans);
@@ -183,12 +183,31 @@
   font-size: calc(var(--fs-name) * 0.78);
 }
 
+/* 中央显示一句情话时，缩小字号并收紧字距，保证在爱心内部一行放下。 */
+.heart-name.is-sentence {
+  max-width: 560px;
+  font-size: calc(var(--fs-name) * 0.62);
+  line-height: 1.35;
+  letter-spacing: 0.06em;
+  padding-left: 0.06em;
+}
+
 .heart-signature {
   margin-top: 18px;
   color: var(--text-3);
   font-family: var(--font-serif);
   font-size: var(--fs-to);
   letter-spacing: 0.12em;
+}
+
+.heart-note {
+  max-width: 420px;
+  margin-top: 16px;
+  color: var(--rose-200);
+  font-family: var(--font-serif);
+  font-size: var(--fs-hint);
+  letter-spacing: 0.08em;
+  opacity: 0.62;
 }
 
 .topbar {
@@ -275,6 +294,13 @@
 
 .stage.is-compact .heart-signature {
   display: none;
+}
+
+.stage.is-compact .heart-note {
+  max-width: 360px;
+  margin-top: 12px;
+  font-size: 11px;
+  letter-spacing: 0.06em;
 }
 
 .stage.is-compact .next-button {

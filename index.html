@@ -34,8 +34,9 @@
           <canvas id="heart-3d" class="heart-canvas heart-3d" aria-hidden="true"></canvas>
           <div class="heart-name-wrap">
             <p class="heart-to" id="heart-to">致 <span>你</span></p>
-            <h2 class="heart-name" id="heart-name">你</h2>
+            <h2 class="heart-name" id="heart-name">剩下的路，我陪你走</h2>
             <p class="heart-signature" id="heart-signature">—— 我</p>
+            <p class="heart-note" id="heart-note"></p>
           </div>
         </div>
 
@@ -47,6 +48,14 @@
             <p class="boot-eyebrow">一份只给你的心意</p>
             <h1 class="boot-title"><span class="title-line">点一下，</span><span class="title-line">有句话想对你说</span></h1>
             <p class="boot-hint"><span class="hint-dot"></span>轻触屏幕</p>
+          </div>
+          <div class="boot-fallback" id="boot-fallback" hidden>
+            <p class="boot-fallback-title">页面脚本没有加载</p>
+            <p class="boot-fallback-text">
+              请在 LOVE 目录运行 <code>python serve.py</code>，再访问
+              <code>http://127.0.0.1:8000/</code>。<br>
+              直接双击 index.html 或使用编辑器内置预览，会被浏览器拦截模块脚本。
+            </p>
           </div>
         </section>
 
@@ -89,7 +98,6 @@
                 </svg>
               </span>
             </button>
-            <button class="text-button skip-button" id="btn-skip" type="button" hidden>跳过</button>
           </div>
         </header>
 
@@ -134,6 +142,14 @@
     <div class="noscript">请开启 JavaScript 后再打开这份心意。</div>
   </noscript>
 
+  <script>
+    // 模块脚本被拦截时（例如用 file:// 打开），给出可见提示，避免只剩黑屏。
+    window.setTimeout(function () {
+      if (window.__love) return;
+      var fallback = document.getElementById("boot-fallback");
+      if (fallback) fallback.hidden = false;
+    }, 2500);
+  </script>
   <script type="module" src="js/main.js"></script>
 </body>
 </html>

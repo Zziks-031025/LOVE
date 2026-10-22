@@ -10,14 +10,17 @@ import {
   isPortraitPhone,
   keywordMarkup,
   prefersReducedMotion,
+  shuffle,
   stageCoordinates
 } from "./utils.js";
 
 const SCENE_NAMES = ["opening", "heart", "fireworks", "words", "text"];
 const WORD_SLOTS = [
-  { x: -24, y: -150 },
-  { x: 28, y: 0 },
-  { x: -24, y: 150 }
+  { x: -238, y: -138 },
+  { x: 242, y: -112 },
+  { x: 6, y: 16 },
+  { x: -226, y: 150 },
+  { x: 236, y: 152 }
 ];
 
 export class SceneManager {
@@ -94,14 +97,33 @@ export class SceneManager {
   buildName() {
     const herName = (this.config.herName || "你").trim();
     const myName = (this.config.myName || "").trim();
-    this.els.heartName.textContent = herName;
-    this.els.heartName.classList.toggle("is-long-name", herName.length > 4);
-    this.els.heartTo.innerHTML = `致 <span>${herName.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")}</span>`;
-    if (myName) {
-      this.els.heartSignature.hidden = false;
-      this.els.heartSignature.textContent = `—— ${myName}`;
-    } else {
-      this.els.heartSignature.hidden = true;
+    const centerText = (this.config.heartCenterText || "").trim() || herName;
+    const isSentence = centerText !== herName;
+    // 每个节点都单独判空：即使 index.html 少了一个元素，也不让整页初始化中断。
+    if (this.els.heartName) {
+      this.els.heartName.textContent = centerText;
+      this.els.heartName.classList.toggle("is-long-name", !isSentence && herName.length > 4);
+      this.els.heartName.classList.toggle("is-sentence", isSentence);
+    }
+    if (this.els.heartTo) {
+      this.els.heartTo.innerHTML = `致 <span>${herName.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")}</span>`;
+    }
+    if (this.els.heartSignature) {
+      if (myName) {
+        this.els.heartSignature.hidden = false;
+        this.els.heartSignature.textContent = `—— ${myName}`;
+      } else {
+        this.els.heartSignature.hidden = true;
+      }
+    }
+    const note = (this.config.heartNote || "").trim();
+    if (this.els.heartNote) {
+      if (note) {
+        this.els.heartNote.hidden = false;
+        this.els.heartNote.textContent = note;
+      } else {
+        this.els.heartNote.hidden = true;
+      }
     }
   }
 
@@ -120,9 +142,6 @@ export class SceneManager {
     this.wordBlocks = this.config.paragraphs.map((paragraph, index) => {
       const block = document.createElement("div");
       block.className = "word-block is-hidden";
-      const slot = WORD_SLOTS[index % WORD_SLOTS.length];
-      block.style.setProperty("--wx", `${slot.x}px`);
-      block.style.setProperty("--wy", `${slot.y}px`);
       block.dataset.index = String(index);
       block.innerHTML = paragraph.lines
         .map((line) => `<span class="word-line">${keywordMarkup(line, paragraph.keyword)}</span>`)
@@ -130,6 +149,9 @@ export class SceneManager {
       this.els.wordsLayer.appendChild(block);
       return block;
     });
+    this.wordQueue = [];
+    this.wordRecent = [];
+    this.wordSlotByIndex = new Map();
   }
 
   setupPassword() {
@@ -284,7 +306,6 @@ export class SceneManager {
     });
 
     this.els.next.addEventListener("click", () => this.goNext());
-    this.els.skip.addEventListener("click", () => this.skipWords());
     this.els.replay.addEventListener("click", () => this.replay());
     this.els.modeButton.addEventListener("click", () => this.toggleMode());
     this.els.music.addEventListener("click", () => this.toggleMusic());
@@ -303,11 +324,26 @@ export class SceneManager {
       if (this.current === 1 && this.mode === "2d") {
         const point = stageCoordinates(event, this.els.stage);
         this.heart2d.setPointer(point.x, point.y, true);
+      } else if (this.current === 0) {
+        const point = stageCoordinates(event, this.els.stage);
+        this.boot.setPointer(point.x, point.y, true);
       }
     });
+
+    this.els.stage.addEventListener("pointermove", (event) => {
+      if (this.current !== 0) return;
+      if (event.target.closest("button, input, a")) {
+        this.boot.clearPointer();
+        return;
+      }
+      const point = stageCoordinates(event, this.els.stage);
+      this.boot.setPointer(point.x, point.y, true);
+    });
+
     const clearPointer = () => {
       this.pointerDown = false;
       this.heart2d.clearPointer();
+      this.boot.clearPointer();
     };
     this.els.stage.addEventListener("pointerup", clearPointer);
     this.els.stage.addEventListener("pointercancel", clearPointer);
@@ -321,7 +357,7 @@ export class SceneManager {
       if (this.current === 0 && this.openingReady) {
         event.preventDefault();
         this.enterFromGate();
-      } else if (this.current === 1 || this.current === 2) {
+      } else if (this.current === 1 || this.current === 2 || this.current === 3) {
         event.preventDefault();
         this.goNext();
       }
@@ -416,9 +452,8 @@ export class SceneManager {
     this.els.topbar.classList.toggle("is-hidden", name === "opening");
     this.els.progress.classList.toggle("is-hidden", name === "opening");
     this.els.modeButton.hidden = !(name === "heart" || name === "fireworks") || !this.webglSupported;
-    this.els.skip.hidden = name !== "words";
-    this.els.next.classList.toggle("is-visible", name === "fireworks");
-    if (name === "words" || name === "text" || name === "opening") {
+    this.els.next.classList.toggle("is-visible", name === "fireworks" || name === "words");
+    if (name === "text" || name === "opening") {
       this.els.next.classList.remove("is-visible");
     }
     if (name !== "text") {
@@ -493,9 +528,9 @@ export class SceneManager {
 
   enterWords() {
     this.setHeartOpacity(0.12);
-    this.heart2d.setBeating(false);
+    this.heart2d.setBeating(!this.reduced);
     this.heart3d?.setAutoRotate(false);
-    this.heart3d?.setBeating(false);
+    this.heart3d?.setBeating(!this.reduced);
     this.heart3d?.setInteractive(false);
     this.fireworks.setActive(false);
     this.fireworks.setOpacity(0.22);
@@ -506,7 +541,6 @@ export class SceneManager {
         this.fireworks.clear();
       }, 900)
     );
-    this.els.next.classList.remove("is-visible");
     this.els.replay.hidden = true;
     this.resetWords();
     this.startWords();
@@ -530,6 +564,7 @@ export class SceneManager {
     if (this.busy || this.modalOpen) return;
     if (this.current === 1) this.activateScene(2);
     else if (this.current === 2) this.activateScene(3);
+    else if (this.current === 3) this.skipWords();
   }
 
   setHeartOpacity(value) {
@@ -547,44 +582,70 @@ export class SceneManager {
   resetWords() {
     this.clearWordsTimers();
     this.wordBlocks.forEach((block) => {
-      block.classList.remove("is-active", "is-dim");
+      block.classList.remove("is-active");
       block.classList.add("is-hidden");
     });
     this.els.wordsLayer.classList.remove("is-leaving");
   }
 
   startWords() {
-    const show = (index) => {
-      if (this.current !== 3) return;
-      this.wordBlocks.forEach((block, i) => {
-        block.classList.remove("is-active", "is-dim");
-        if (i === index) {
-          block.classList.remove("is-hidden");
-          block.classList.add("is-active");
-        } else if (index - i >= 1 && index - i <= 2) {
-          block.classList.remove("is-hidden");
-          block.classList.add("is-dim");
-        } else {
-          block.classList.add("is-hidden");
-        }
-      });
-      if (index < this.wordBlocks.length - 1) {
-        this.wordsTimers.push(window.setTimeout(() => show(index + 1), 900));
-      } else {
-        this.wordsTimers.push(window.setTimeout(() => this.finishWords(), 2000));
-      }
-    };
-    this.wordsTimers.push(window.setTimeout(() => show(0), 600));
+    this.wordQueue = shuffle(this.wordBlocks.map((block, index) => index));
+    this.wordRecent = [];
+    this.wordSlotByIndex = new Map();
+    this.wordsTimers.push(window.setTimeout(() => this.showNextWord(), 500));
   }
 
-  finishWords() {
+  showNextWord() {
     if (this.current !== 3) return;
-    this.els.wordsLayer.classList.add("is-leaving");
-    this.sceneTimers.push(
-      window.setTimeout(() => {
-        if (this.current === 3) this.activateScene(4);
-      }, 500)
+    if (!this.wordQueue.length) {
+      // 一轮放完后重新洗牌，仍在屏幕上的几段不参与，避免立刻重复。
+      const recent = new Set(this.wordRecent);
+      this.wordQueue = shuffle(
+        this.wordBlocks
+          .map((block, index) => index)
+          .filter((index) => !recent.has(index))
+      );
+    }
+    const index = this.wordQueue.shift();
+    if (index === undefined) return;
+
+    // 在 5 个位置中随机挑一个，避开还在屏幕上的几句。
+    const occupied = new Set();
+    this.wordRecent.forEach((recentIndex) => {
+      const slotIndex = this.wordSlotByIndex.get(recentIndex);
+      if (slotIndex !== undefined) occupied.add(slotIndex);
+    });
+    const freeSlots = WORD_SLOTS.map((slot, slotIndex) => slotIndex).filter(
+      (slotIndex) => !occupied.has(slotIndex)
     );
+    const slotIndex = freeSlots[Math.floor(Math.random() * freeSlots.length)];
+    const slot = WORD_SLOTS[slotIndex];
+    this.wordSlotByIndex.set(index, slotIndex);
+
+    const block = this.wordBlocks[index];
+    // 换位置时不做过渡，避免从上一个位置滑过来。
+    block.classList.add("no-transition");
+    block.style.setProperty("--wx", `${slot.x}px`);
+    block.style.setProperty("--wy", `${slot.y}px`);
+    void block.offsetWidth;
+    block.classList.remove("no-transition");
+
+    block.classList.remove("is-hidden");
+    block.classList.add("is-active");
+
+    this.wordRecent = [index, ...this.wordRecent].slice(0, 3);
+
+    // 每句待遇完全相同：淡入 600 毫秒、全亮停留 1000 毫秒，然后淡出消失，不留残影。
+    this.wordsTimers.push(
+      window.setTimeout(() => {
+        if (this.current !== 3) return;
+        block.classList.remove("is-active");
+        block.classList.add("is-hidden");
+      }, 1600)
+    );
+
+    // 每 900 毫秒出现下一句，因此同屏会自然保留 2–3 句在亮着或淡出。
+    this.wordsTimers.push(window.setTimeout(() => this.showNextWord(), 900));
   }
 
   skipWords() {
@@ -671,7 +732,7 @@ export class SceneManager {
       this.els.stage.dataset.mode = "3d";
       this.heart3d.setInteractive(this.current === 1);
       this.heart3d.setAutoRotate(!this.reduced && this.current < 3);
-      this.heart3d.setBeating(!this.reduced && this.current < 3);
+      this.heart3d.setBeating(!this.reduced && this.current < 4);
       this.setHeartOpacity(this.heartOpacityForCurrent());
       this.els.modeButton.textContent = "2D";
       this.els.modeButton.setAttribute("aria-label", "切换到 2D 爱心");

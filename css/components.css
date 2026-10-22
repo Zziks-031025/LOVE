@@ -138,19 +138,6 @@
   letter-spacing: 0.22em;
 }
 
-.skip-button {
-  min-width: var(--control-hit);
-  padding: 0 6px;
-  color: var(--text-3);
-  font-size: var(--fs-ui);
-  letter-spacing: 0.12em;
-  opacity: 0.58;
-}
-
-.skip-button:hover {
-  opacity: 0.9;
-}
-
 .replay-button {
   position: absolute;
   right: var(--safe-right);

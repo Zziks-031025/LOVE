@@ -3,8 +3,7 @@ import {
   heartBox,
   keywordMarkup,
   prefersReducedMotion,
-  randomRange,
-  shuffle
+  randomRange
 } from "./utils.js";
 
 const DESIGN_WIDTH = 1240;
@@ -26,7 +25,7 @@ export class TextHeart {
     this.isPlaying = false;
     this.reduced = prefersReducedMotion();
     this.current = null;
-    this.queue = [];
+    this.centerIndex = 0;
     this.build();
   }
 
@@ -169,18 +168,24 @@ export class TextHeart {
     }
   }
 
+  centerLines() {
+    const { lines, defaultLines } = this.config.center;
+    if (Array.isArray(lines) && lines.length) return lines;
+    return defaultLines || [];
+  }
+
   showDefaultCenter(animate = true) {
-    const { defaultLines, keyword } = this.config.center;
-    this.centerMain.innerHTML = defaultLines
-      .map((line) => `<span class="line">${keywordMarkup(line, keyword)}</span>`)
-      .join("");
+    const lines = this.centerLines();
+    const text = lines[0] || "";
+    this.centerIndex = 0;
+    this.centerMain.innerHTML = `<span class="line${text.length > 12 ? " is-long" : ""}">${keywordMarkup(text, this.config.center.keyword)}</span>`;
     this.centerCopy.classList.remove("is-hidden", "is-out", "is-in", "is-long");
     if (animate) {
       this.centerCopy.classList.add("is-in");
       void this.centerCopy.offsetWidth;
       requestAnimationFrame(() => this.centerCopy.classList.remove("is-in"));
     }
-    this.current = defaultLines.join("");
+    this.current = text;
   }
 
   renderCenterLine(item) {
@@ -218,13 +223,12 @@ export class TextHeart {
   }
 
   nextLine() {
-    if (!this.queue.length) {
-      this.queue = shuffle(this.lineData.filter((item) => item.text !== this.current));
-    }
-    const item = this.queue.shift();
-    if (!item) return null;
-    this.current = item.text;
-    return item;
+    const lines = this.centerLines();
+    if (!lines.length) return null;
+    this.centerIndex = (this.centerIndex + 1) % lines.length;
+    const text = lines[this.centerIndex];
+    this.current = text;
+    return { text, keyword: this.config.center.keyword };
   }
 
   clearCenterTimers() {
@@ -254,7 +258,7 @@ export class TextHeart {
     this.clearCenterTimers();
     this.centerCopy.classList.add("is-hidden");
     this.current = null;
-    this.queue = [];
+    this.centerIndex = 0;
 
     const total = this.lines.length;
     this.lines.forEach((line, index) => {
@@ -353,7 +357,7 @@ export class TextHeart {
   reset() {
     this.stop();
     this.current = null;
-    this.queue = [];
+    this.centerIndex = 0;
     this.centerCopy.classList.add("is-hidden");
   }
 }

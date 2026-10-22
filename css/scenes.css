@@ -135,6 +135,45 @@
   }
 }
 
+.boot-fallback {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  z-index: 6;
+  width: 520px;
+  padding: 22px 26px;
+  border: 1px solid rgba(255, 214, 222, 0.16);
+  border-radius: 14px;
+  background: rgba(10, 4, 7, 0.78);
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.boot-fallback[hidden] {
+  display: none;
+}
+
+.boot-fallback-title {
+  color: var(--rose-100);
+  font-family: var(--font-serif);
+  font-size: 18px;
+  letter-spacing: 0.12em;
+}
+
+.boot-fallback-text {
+  margin-top: 10px;
+  color: var(--text-2);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  line-height: 1.9;
+  letter-spacing: 0.04em;
+}
+
+.boot-fallback code {
+  color: var(--rose-200);
+  word-break: break-all;
+}
+
 .stage.is-compact .boot-content {
   width: 640px;
   bottom: 26px;
@@ -212,15 +251,14 @@
   text-shadow: 0 0 24px rgba(255, 77, 109, 0.12);
 }
 
+/* 随机换位置时不播过渡，避免从上一个位置滑过来 */
+.word-block.no-transition {
+  transition: none;
+}
+
 .word-block.is-active {
   z-index: 3;
   opacity: 1;
-  transform: translate(-50%, -50%) translate(var(--wx, 0px), var(--wy, 0px));
-}
-
-.word-block.is-dim {
-  z-index: 1;
-  opacity: 0.3;
   transform: translate(-50%, -50%) translate(var(--wx, 0px), var(--wy, 0px));
 }
 
