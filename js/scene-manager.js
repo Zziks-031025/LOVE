@@ -469,7 +469,7 @@ export class SceneManager {
     const name = SCENE_NAMES[this.current] || "opening";
     this.els.topbar.classList.toggle("is-hidden", name === "opening");
     this.els.progress.classList.toggle("is-hidden", name === "opening");
-    this.els.modeButton.hidden = !(name === "heart" || name === "fireworks") || !this.webglSupported;
+    this.els.modeButton.hidden = !(name === "heart" || name === "fireworks" || name === "words") || !this.webglSupported;
     this.els.next.classList.toggle("is-visible", name === "fireworks" || name === "words");
     if (name === "text" || name === "opening") {
       this.els.next.classList.remove("is-visible");
@@ -545,9 +545,9 @@ export class SceneManager {
   }
 
   enterWords() {
-    this.setHeartOpacity(0.12);
+    this.setHeartOpacity(this.heartOpacityForCurrent());
     this.heart2d.setBeating(!this.reduced);
-    this.heart3d?.setAutoRotate(false);
+    this.heart3d?.setAutoRotate(!this.reduced);
     this.heart3d?.setBeating(!this.reduced);
     this.heart3d?.setInteractive(false);
     this.fireworks.setActive(false);
@@ -749,7 +749,7 @@ export class SceneManager {
       this.mode = "3d";
       this.els.stage.dataset.mode = "3d";
       this.heart3d.setInteractive(this.current === 1);
-      this.heart3d.setAutoRotate(!this.reduced && this.current < 3);
+      this.heart3d.setAutoRotate(!this.reduced && this.current < 4);
       this.heart3d.setBeating(!this.reduced && this.current < 4);
       this.setHeartOpacity(this.heartOpacityForCurrent());
       this.els.modeButton.textContent = "2D";
@@ -784,7 +784,7 @@ export class SceneManager {
   }
 
   heartOpacityForCurrent() {
-    return [0, 1, 0.35, 0.12, 0][this.current] ?? 0;
+    return [0, 1, 0.35, 0.28, 0][this.current] ?? 0;
   }
 
   launchFireworks(event) {
