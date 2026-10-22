@@ -275,6 +275,10 @@
   z-index: 0;
   opacity: 0;
   transform: translate(-50%, -50%) translate(var(--wx, 0px), calc(var(--wy, 0px) + 10px));
+  /* 渐隐比淡入更慢，消失更柔和 */
+  transition:
+    opacity 1.4s var(--ease-soft),
+    transform 1.4s var(--ease-soft);
 }
 
 .word-line {

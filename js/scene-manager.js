@@ -653,17 +653,17 @@ export class SceneManager {
 
     this.wordRecent = [index, ...this.wordRecent].slice(0, 3);
 
-    // 每句待遇完全相同：淡入 600 毫秒、全亮停留 1000 毫秒，然后淡出消失，不留残影。
+    // 每句待遇完全相同：淡入 600 毫秒、全亮停留 2000 毫秒，然后渐隐消失，不留残影。
     this.wordsTimers.push(
       window.setTimeout(() => {
         if (this.current !== 3) return;
         block.classList.remove("is-active");
         block.classList.add("is-hidden");
-      }, 1600)
+      }, 2600)
     );
 
-    // 每 900 毫秒出现下一句，因此同屏会自然保留 2–3 句在亮着或淡出。
-    this.wordsTimers.push(window.setTimeout(() => this.showNextWord(), 900));
+    // 每 1400 毫秒出现下一句，因此同屏会自然保留 2–3 句在亮着或渐隐。
+    this.wordsTimers.push(window.setTimeout(() => this.showNextWord(), 1400));
   }
 
   skipWords() {
